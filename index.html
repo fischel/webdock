@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>webdock</title>
+    <link rel="stylesheet" href="css/styles.css" />
+    <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
+    <script type='text/javascript' src='js/knockout-2.3.0.js'></script>
+    <script type='text/javascript' src='js/amplify.js'></script>
+    <script type="text/javascript" src="https://www.dropbox.com/static/api/dropbox-datastores-1.0-latest.js"></script>
+    <script type="text/javascript" src="js/webdock.js"></script>
+    <script type="text/javascript" src="js/app/store.js"></script>
+    <script type="text/javascript" src="js/app/sync.js"></script>
+    <script type="text/javascript" src="js/app/vm.js"></script>
+</head>
+<body id="idbody" data-bind="click: clickBody">
+    <div class="toolbar">
+        <button data-bind="click: clickAdd, disable: disabledAdd" title="Create a new note">Add</button><button
+            data-bind="click: clickDelete, disable: disabledDelete">Delete</button><button
+            data-bind="click: clickLoad, disable: disabledLoad, text: textLoad"></button><button
+            data-bind="click: clickSave, disable: disabledSave, text: textSave"></button><button
+            data-bind="click: clickKey, disable: disabledKey">Key</button><button
+            data-bind="click: clickDoc, disable: disabledDoc">Doc</button><button
+            data-bind="click: clickDebug">Debug</button>
+    </div>
+
+    <div class="dialog" data-bind="visible: visibleDoc">
+        <p>Welcome to webdock :)<br />
+            <br />
+           I'm a simple app for creating notes and save them to dropdox.<br />
+            <br />
+            Here you can find a <a href="dropbox.html" target="_self">tutorial</a> how to setup dropbox for accepting your notes.<br />
+            <br />
+            Enjoy webdock and stay in touch with me at <a href="https://github.com/fischel/webdock" target="_blank">github</a><br />
+            <br />
+        </p>
+        <p align="center">
+            <button data-bind="click:clickOkay" >Okay</button>
+        </p>
+    </div>
+
+    <div class="dialog" data-bind="visible: visibleForm">
+        <form>
+            <table>
+
+                <tr>
+                    <td colspan="2"><p>Enter here your app key for dropbox.
+                        You can find the key <a href="dropbox.html" target="_self">here</a>.<br /><br /></p></td>
+                </tr>
+                <tr>
+                    <td><label for="appkey">App key:</label></td>
+                    <td><input type="text" id="appkey" maxlength="64" data-bind="value: formAppKey, hasFocus: formFocus" /></td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td align="right"><br />
+                        <button data-bind="click:clickFormCancel">Cancel</button>
+                        <button data-bind="click:clickFormSave" >Save</button>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+
+    <div data-bind="template: {name: template, foreach: notes}, visible: visibleDesk"></div>
+
+    <script type="text/html" id="noteview">
+        <div class="note" data-bind="style: {left: left, top: top, 'z-index': index}">
+            <div class="title" data-bind="event: {mousedown: $parent.mouseDown, touchstart: $parent.mouseDown}, text: title()"></div>
+            <div class="content over"
+                 data-bind="click: $parent.clickNote, html: contentView(), style: {width: width, height: height}"></div>
+            <span class="notecreated" data-bind="text: dateFormatted"></span>
+            <div class="noteresize" data-bind="event: {mousedown: $parent.sizeStart, touchstart: $parent.sizeStart}"></div>
+        </div>
+    </script>
+
+    <script type="text/html" id="noteselected">
+        <div class="note" data-bind="style: {left: left, top: top, 'z-index': index}">
+            <div class="title" data-bind="event: {mousedown: $parent.mouseDown, touchstart: $parent.mouseDown}, text: title()"></div>
+            <div class="content"
+                 data-bind="style: {width: width, height: height}"><textarea data-bind="click: $parent.clickNote, hasFocus: $parent.focusSelected, value: content, valueUpdate: 'afterkeydown'"></textarea></div>
+            <span class="notecreated" data-bind="text: dateFormatted"></span>
+            <div class="noteresize" data-bind="event: {mousedown: $parent.sizeStart, touchstart: $parent.sizeStart}"></div>
+        </div>
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>webdock</title>
+    <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+    <div class="toolbar">
+        <button onclick="history.back()">Back</button>
+    </div>
+
+    <div class="dialog" style="width: 640px;">
+        <p>Welcome to webdock :)<br />
+            <br />
+            For webdock you have to create a datastore in dropbox.<br />
+            <br />
+            First login to the <a href="https://www.dropbox.com/developers/apps" target="_blank">developer-site</a> from dropbox and go to the
+            app-console.<br />
+            <br />
+            Then click on the button &quot;Create app&quot;.<br />
+            <br />
+            On the next step you have to choose a type and give your app a name.<br />
+            - choose &quot;Dropbox API app&quot; for type<br />
+            - choose &quot;Datasores only&quot; for type of data<br />
+            - choose &quot;webdock&quot; for the name<br />
+            - create your app<br />
+            <br />
+            <a href="images/dropbox/create_app.png"><img src="images/dropbox/create_app.png" width="400" border="0" /></a>
+            <br />
+            <br />
+            On &quot;Settings&quot; you can see your app-key. And you have to add two URIs to &quot;OAuth redirect&quot;.<br />
+            - add &quot;https://yourserver/&quot;<br />
+            - add &quot;https://yourserver/index.html&quot;<br />
+            - for scripting you can add your localhost &quot;http://localhost/webdock&quot;<br />
+            <br />
+            <a href="images/dropbox/settings.png"><img src="images/dropbox/settings.png" width="400" border="0" /></a>
+            <br />
+            <br />
+            Your app-key is needed in the key-form.<br />
+            <br />
+            <br />
+            So first time you SAVE your notes, you have to auth to dropbox and accept the connection from the site to the
+            datastore. After that you only press the button SAVE and your notes are saved. :)
+        </p>
+    </div>
+
+    <p>&nbsp;</p>
+
+</body>
+</html>
