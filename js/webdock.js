@@ -10,9 +10,13 @@
  * Version: 1.0
  */
 
-var App = window.App = {};
+var App = window.App = {
+    ram: null,    // storage for localstore
+    floppy: null, // save data to external
+    box: null     // vm
+};
 
 window.onload = function() {
-    App.store.init();
-    ko.applyBindings(App.vm);
+    App.ram.init();
+    ko.applyBindings(App.box);
 }

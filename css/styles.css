@@ -28,7 +28,7 @@ input[type="text"] {
 /*-----------------------------------*/
 
 .toolbar {
-    background-color: rgba(0,0,0,.6);
+    background-color: rgba(0,0,0,.7);
     padding: 0px;
     border: 0px;
 }
@@ -63,11 +63,11 @@ input[type="text"] {
 /*-----------------------------------*/
 
 .dialog {
-    background-color: rgba(0,0,0,0.5);
+    background-color: rgba(0,0,0,0.7);
     border-radius: 4px 4px 4px 4px;
     color: white;
     margin: 64px auto;
-    padding: 8px;
+    padding: 16px;
     width: 400px;
 }
 

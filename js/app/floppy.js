@@ -5,15 +5,17 @@
     var dbStore;
     var dbTable;
 
-    App.sync = {
+    var floppy = {};
 
-    };
-
-    App.sync.init = function() {
+    floppy.init = function() {
         var t;
 
+        if (typeof Dropbox == 'undefined') {
+            return;
+        }
+
         // dropbox client
-        dbClient = new Dropbox.Client({key: App.store.data.floppy.key});
+        dbClient = new Dropbox.Client({key: App.ram.data.floppy.key});
         dbClient.authenticate({interactive: true}, function (error, cl) {
             if (error) {
                 alert('Authentication error: ' + error);
@@ -28,21 +30,21 @@
                 } else {
                     dbStore = datastore;
                     dbTable = datastore.getTable('notes');
-                    datastore.syncStatusChanged.addListener(App.sync.status);
+                    datastore.syncStatusChanged.addListener(floppy.status);
 
-                    t = App.sync.load(false);
+                    t = floppy.load(false);
                     if (t > 0) {
-                        App.vm.textLoad('Load(' + t + ')');
+                        App.box.textLoad('Load(' + t + ')');
                     }
-                    App.vm.checkUnsaved();
-                    App.vm.statusLoad(true);
-                    App.vm.statusSave(true);
+                    App.box.checkUnsaved();
+                    App.box.statusLoad(true);
+                    App.box.statusSave(true);
                 }
             });
         }
     }
 
-    App.sync.load = function(saveData) {
+    floppy.load = function(saveData) {
         var t, found;
         var count = 0;
 
@@ -54,7 +56,7 @@
         var k = results.length;
         for (var t = 0; t < k; t++) {
             // create elem
-            var elem = App.store.create({
+            var elem = App.ram.create({
                 id: results[t].getId(),
                 version: results[t].get('version'),
                 x: results[t].get('x'),
@@ -66,17 +68,17 @@
                 modified: results[t].get('modified').getTime()
             });
 
-            found = App.store.findById(results[t].getId());
+            found = App.ram.findById(results[t].getId());
             if (found == null) {
                 count++;
                 console.log('dbLoad: add');
                 if (saveData) {
-                    App.store.add(elem);
-                    App.vm.add(elem);
+                    App.ram.add(elem);
+                    App.box.add(elem);
                 }
             } else {
-                console.log('dbLoad: found');
-                // !App.store.equal(elem, found)
+                // console.log(elem.content);
+                console.log('dbLoad: found: ' + found.version + '=' + elem.version);
                 if (found.version < elem.version) {
                     count++;
                     if (saveData) {
@@ -86,27 +88,27 @@
                         found.width = results[t].get('width');
                         found.height = results[t].get('height');
                         found.content = results[t].get('content');
-                        App.vm.refreshNote(found);
+                        App.box.refreshNote(found);
                     }
                 }
             }
         }
-        App.store.save();
+        App.ram.save();
         if (saveData) {
-            App.vm.textLoad('Load');
+            App.box.textLoad('Load');
         }
         return count;
     }
 
-    App.sync.save = function() {
+    floppy.save = function() {
         var t, elem, found, saveObj;
 
         if (dbTable == null) {
             return;
         }
 
-        for (t = 0; t < App.store.data.notes.length; t++) {
-            elem = App.store.data.notes[t];
+        for (t = 0; t < App.ram.data.notes.length; t++) {
+            elem = App.ram.data.notes[t];
             saveObj = {
                 version: elem.version,
                 x: elem.x,
@@ -123,6 +125,7 @@
                 if (found) {
                     if (elem.changed) {
                         elem.version++;
+                        saveObj.version++;
                     }
                     found.update(saveObj);
                 } else {
@@ -137,27 +140,29 @@
             }
             elem.changed = false;
         }
-        App.store.save();
+        App.ram.save();
 
         // delete unsused
         var results = dbTable.query({});
         for (var t = 0; t < results.length; t++) {
-            found = App.store.findById(results[t].getId());
+            found = App.ram.findById(results[t].getId());
             if (found == null) {
                 console.log('dbLoad: delete');
                 results[t].deleteRecord();
             }
         }
 
-        App.vm.checkUnsaved();
+        App.box.checkUnsaved();
     }
 
-    App.sync.status = function() {
+    floppy.status = function() {
         if (dbStore.getSyncStatus().uploading) {
-            App.vm.statusSave(false);
+            App.box.statusSave(false);
         } else {
-            App.vm.statusSave(true);
+            App.box.statusSave(true);
         }
     }
+
+    App.floppy = floppy;
 
 })(App)

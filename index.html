@@ -10,9 +10,9 @@
     <script type='text/javascript' src='js/amplify.js'></script>
     <script type="text/javascript" src="https://www.dropbox.com/static/api/dropbox-datastores-1.0-latest.js"></script>
     <script type="text/javascript" src="js/webdock.js"></script>
-    <script type="text/javascript" src="js/app/store.js"></script>
-    <script type="text/javascript" src="js/app/sync.js"></script>
-    <script type="text/javascript" src="js/app/vm.js"></script>
+    <script type="text/javascript" src="js/app/ram.js"></script>
+    <script type="text/javascript" src="js/app/floppy.js"></script>
+    <script type="text/javascript" src="js/app/box.js"></script>
 </head>
 <body id="idbody" data-bind="click: clickBody">
     <div class="toolbar">
@@ -21,8 +21,7 @@
             data-bind="click: clickLoad, disable: disabledLoad, text: textLoad"></button><button
             data-bind="click: clickSave, disable: disabledSave, text: textSave"></button><button
             data-bind="click: clickKey, disable: disabledKey">Key</button><button
-            data-bind="click: clickDoc, disable: disabledDoc">Doc</button><button
-            data-bind="click: clickDebug">Debug</button>
+            data-bind="click: clickDoc, disable: disabledDoc">Doc</button>
     </div>
 
     <div class="dialog" data-bind="visible: visibleDoc">

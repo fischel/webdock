@@ -1,7 +1,7 @@
 
 (function(App){
 
-    App.store = {
+    var ram = {
         data: {
             version: 1,
             floppy: {
@@ -12,23 +12,23 @@
         }
     };
 
-    App.store.add = function(elem) {
-        App.store.data.notes.push(elem);
+    ram.add = function(elem) {
+        ram.data.notes.push(elem);
     }
 
-    App.store.countUnsaved = function() {
+    ram.countUnsaved = function() {
         var t, count = 0;
 
-        for (t = 0; t < App.store.data.notes.length; t++) {
-            found = App.store.data.notes[t];
-            if (App.store.data.notes[t].id == null || App.store.data.notes[t].changed) {
+        for (t = 0; t < ram.data.notes.length; t++) {
+            found = ram.data.notes[t];
+            if (ram.data.notes[t].id == null || ram.data.notes[t].changed) {
                 count++;
             }
         }
         return count;
     }
 
-    App.store.create = function(spec) {
+    ram.create = function(spec) {
         var da = new Date();
         var elem = {
             id: spec.id || null, // id for dropbox and other
@@ -45,19 +45,19 @@
         return elem;
     }
 
-    App.store.delete = function(elem) {
+    ram.delete = function(elem) {
         var t, found, temp = [];
 
-        for (t = 0; t < App.store.data.notes.length; t++) {
-            found = App.store.data.notes[t];
+        for (t = 0; t < ram.data.notes.length; t++) {
+            found = ram.data.notes[t];
             if (found != elem) {
                 temp.push(found);
             }
         }
-        App.store.data.notes = temp;
+        ram.data.notes = temp;
     }
 
-    /*App.store.equal = function(elem1, elem2) {
+    /*ram.equal = function(elem1, elem2) {
         if (elem1.x != elem2.x || elem1.y != elem2.y) {
             return false;
         }
@@ -70,12 +70,12 @@
         return true;
     }*/
 
-    App.store.findById = function(id) {
+    ram.findById = function(id) {
         var t;
 
-        for (t = 0; t < App.store.data.notes.length; t++) {
-            if (App.store.data.notes[t].id == id) {
-                return App.store.data.notes[t];
+        for (t = 0; t < ram.data.notes.length; t++) {
+            if (ram.data.notes[t].id == id) {
+                return ram.data.notes[t];
             }
         }
         return null;
@@ -84,7 +84,7 @@
     /**
      * check localstore
      */
-    App.store.init = function() {
+    ram.init = function() {
         var elem, store = null;
 
         try {
@@ -99,24 +99,24 @@
 
 
                 console.log('found localstore');
-                App.vm.setMode('desk');
+                App.box.setMode('desk');
 
                 if (store.hasOwnProperty('floppy')) {
-                    App.store.data.floppy = store.floppy;
+                    ram.data.floppy = store.floppy;
                 }
 
                 if (store.hasOwnProperty('notes')) {
                     for (t = 0; t < store.notes.length; t++) {
-                        elem = App.store.create(store.notes[t]);
-                        App.store.add(elem);
-                        App.vm.add(elem);
+                        elem = ram.create(store.notes[t]);
+                        ram.add(elem);
+                        App.box.add(elem);
                     }
                 }
 
                 // if floppy
-                if (App.store.data.floppy.name == 'dropbox') {
+                if (ram.data.floppy.name == 'dropbox') {
                     // sync
-                    App.sync.init();
+                    App.floppy.init();
                 }
             }
 
@@ -126,15 +126,34 @@
 
     }
 
-    App.store.save = function() {
+    ram.save = function() {
         try {
-            amplify.store("webdock", App.store.data);
+            amplify.store("webdock", ram.data);
         }  catch( error ) {
             alert(error);
         }
     }
 
-    App.store.updateNote = function(elem, changes) {
+    ram.size = function()
+    {
+        return JSON.stringify(ram.data).length;
+    }
+
+    ram.sizeFormatted = function()
+    {
+        var l = ram.size();
+        if (l < 1024) {
+            return l + ' Bytes';
+        }
+        l = Math.floor(l / 1024);
+        if (l < 1024) {
+            return l + ' KiB';
+        }
+        l = Math.floor(l / 1024);
+        return l + ' MiB';
+    }
+
+    ram.updateNote = function(elem, changes) {
         var t, k;
         var found = false;
         var attrs = ['x', 'y', 'width', 'height', 'content'];
@@ -158,5 +177,7 @@
         }
 
     }
+
+    App.ram = ram;
 
 })(App)
