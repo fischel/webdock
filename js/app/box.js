@@ -250,9 +250,13 @@
         console.log('clickFormSave');
         var key = box.formAppKey().trim();
         if (key.length > 0) {
-            App.ram.data.floppy.name = 'dropbox';
-            App.ram.data.floppy.key = key;
-            App.ram.save();
+            if (key != App.ram.data.floppy.name) {
+                App.ram.data.floppy.name = 'dropbox';
+                App.ram.data.floppy.key = key;
+                App.ram.save();
+                // reload page
+                window.location.reload();
+            }
             box.setMode('desk');
         } else {
             alert('Please enter your app key!');
