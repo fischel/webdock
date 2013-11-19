@@ -8,12 +8,23 @@
                 name: null, // if name is set, use it
                 key: null
             },
-            notes: []
+            notes: [],
+            deleted: [] // array with deleted ids - cleared by floppy
         }
     };
 
     ram.add = function(elem) {
+        var t, k = [];
+
         ram.data.notes.push(elem);
+        // check deleted
+
+        for (t = 0; t < ram.data.deleted.length; t++) {
+            if (ram.data.deleted[t] != elem.id) {
+                k.push(ram.data.deleted[t]);
+            }
+        }
+        ram.data.deleted = k;
     }
 
     ram.countUnsaved = function() {
@@ -55,6 +66,9 @@
             }
         }
         ram.data.notes = temp;
+        if (elem.id) {
+            ram.data.deleted.push(elem.id);
+        }
     }
 
     /*ram.equal = function(elem1, elem2) {
@@ -97,7 +111,6 @@
         if (store) {
             if (store.hasOwnProperty('version')) {
 
-
                 console.log('found localstore');
                 App.box.setMode('desk');
 
@@ -111,6 +124,10 @@
                         ram.add(elem);
                         App.box.add(elem);
                     }
+                }
+
+                if (store.hasOwnProperty('deleted')) {
+                    ram.data.deleted = store.deleted;
                 }
 
                 // if floppy

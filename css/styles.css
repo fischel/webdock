@@ -21,6 +21,7 @@ body {
 input[type="text"] {
     border: 1px solid #888;
     box-sizing: border-box;
+    -moz-box-sizing: border-box; /* needed for firefox */
     padding: 3px 10px 2px;
     width: 100%;
 }

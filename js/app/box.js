@@ -99,16 +99,48 @@
     }
 
     box.checkUnsaved = function() {
-        var t = App.ram.countUnsaved();
+        var title = 'Save';
+        var t = App.ram.countUnsaved() + App.ram.data.deleted.length;
+
         if (t > 0) {
-            box.textSave('Save(' + t + ')');
-        } else {
-            box.textSave('Save');
+            title = 'Save(' + t + ')';
+        }
+        box.textSave(title);
+    }
+
+    box.delete = function(elem) {
+        var k;
+        var note = box.getNoteByData(elem);
+        var i = note.index();
+
+        if (note) {
+            box.notes.remove(note);
+            App.ram.delete(note.data);
+            App.ram.save();
+
+            for (t = 0; t < box.notes().length; t++) {
+                k = box.notes()[t].index();
+                if (k > i) {
+                    box.notes()[t].index(k - 1);
+                }
+            }
         }
     }
 
     box.focusSelected = function(item) {
         return box.noteSelected == item && box.mode() == 'desk';
+    }
+
+    box.getNoteByData = function(elem) {
+        var t, note;
+
+        for (t = 0; t < box.notes().length; t++) {
+            note = box.notes()[t];
+            if (note.data == elem) {
+                return note;
+            }
+        }
+        return null;
     }
 
     box.index = function(note) {
@@ -215,22 +247,10 @@
 
     box.clickDelete = function(item, event) {
         var note = box.noteSelected;
-        var i = note.index();
-        var k;
 
         if (confirm("Are you sure?")) {
             box.unselectItem();
-            App.ram.delete(note.data);
-            App.ram.save();
-            box.notes.remove(note);
-
-            for (t = 0; t < box.notes().length; t++) {
-                k = box.notes()[t].index();
-                if (k > i) {
-                    box.notes()[t].index(k - 1);
-                }
-            }
-
+            box.delete(note.data);
             box.checkUnsaved();
         }
     }

@@ -8,7 +8,7 @@
     var floppy = {};
 
     floppy.init = function() {
-        var t;
+        var change;
 
         if (typeof Dropbox == 'undefined') {
             return;
@@ -32,9 +32,9 @@
                     dbTable = datastore.getTable('notes');
                     datastore.syncStatusChanged.addListener(floppy.status);
 
-                    t = floppy.load(false);
-                    if (t > 0) {
-                        App.box.textLoad('Load(' + t + ')');
+                    change = floppy.load(false);
+                    if (change > 0) {
+                        App.box.textLoad('Load(' + change + ')');
                     }
                     App.box.checkUnsaved();
                     App.box.statusLoad(true);
@@ -46,17 +46,22 @@
 
     floppy.load = function(saveData) {
         var t, found;
-        var count = 0;
+        var change = 0;
 
         if (dbTable == null) {
             return;
         }
 
+        var elem;
         var results = dbTable.query({});
         var k = results.length;
+        var foundIds = {};
         for (var t = 0; t < k; t++) {
+            // save id
+            foundIds[ results[t].getId() ] = true;
+
             // create elem
-            var elem = App.ram.create({
+            elem = App.ram.create({
                 id: results[t].getId(),
                 version: results[t].get('version'),
                 x: results[t].get('x'),
@@ -70,7 +75,7 @@
 
             found = App.ram.findById(results[t].getId());
             if (found == null) {
-                count++;
+                change++;
                 console.log('dbLoad: add');
                 if (saveData) {
                     App.ram.add(elem);
@@ -80,7 +85,7 @@
                 // console.log(elem.content);
                 console.log('dbLoad: found: ' + found.version + '=' + elem.version);
                 if (found.version < elem.version) {
-                    count++;
+                    change++;
                     if (saveData) {
                         found.version = results[t].get('version');
                         found.x = results[t].get('x');
@@ -93,11 +98,23 @@
                 }
             }
         }
+        // check for delete
+        for (t = 0; t < App.ram.data.notes.length; t++) {
+            elem = App.ram.data.notes[t];
+            if (!foundIds.hasOwnProperty(elem.id)) {
+                console.log('dbLoad: delete');
+                change++;
+                if (saveData) {
+                    App.box.delete(elem);
+                }
+            }
+        }
+
         App.ram.save();
         if (saveData) {
             App.box.textLoad('Load');
         }
-        return count;
+        return change;
     }
 
     floppy.save = function() {
@@ -140,7 +157,6 @@
             }
             elem.changed = false;
         }
-        App.ram.save();
 
         // delete unsused
         var results = dbTable.query({});
@@ -152,6 +168,8 @@
             }
         }
 
+        App.ram.data.deleted = [];
+        App.ram.save();
         App.box.checkUnsaved();
     }
 

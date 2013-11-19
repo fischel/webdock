@@ -19,6 +19,7 @@ todo:
 * create offline-manifest
 * optimize iPad
 * conflict management
+* find logo
 
 future steps:
 * add calendar
